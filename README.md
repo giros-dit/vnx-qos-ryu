@@ -1,6 +1,5 @@
 # vnx-qos-ryu
-Simple VNX scenario using the Ryu controller to test QoS funcions that can be set with REST. It defines two hosts, two containers acting as OpenFlow switches and a management network linking the switches and the localhost.
-It is based on the per-flow QoS example in the [QoS section](https://osrg.github.io/ryu-book/en/html/rest_qos.html) of Ryubook 1.0 documentation.
+Simple VNX scenario using the Ryu controller to test QoS funcions that can be set with REST, based on the per-flow QoS example in the [QoS section](https://osrg.github.io/ryu-book/en/html/rest_qos.html) of Ryubook 1.0 documentation. It defines two hosts, two containers acting as OpenFlow switches and a management network linking the switches and the localhost.
 
 ## Diagram 
 ![QoS Ryu diagram](doc/qos-ryu-editable.png)
@@ -71,38 +70,45 @@ curl -X GET http://172.17.2.100:8080/qos/rules/0000000000000002
 ```
 
 8. Verify it works
+
 The following test should result in bandwidth under 500 Kbps
 
 ```shell
-h1> iperf -s -u -i 1 -p 5001
-h2> iperf -c 10.0.0.1 -p 5001 -u -b 1M -l 1200 
+h1# iperf -s -u -i 1 -p 5001
+h2# iperf -c 10.0.0.1 -p 5001 -u -b 1M -l 1200 
 ```
 
 The following test should result in bandwidth over 800 Kbps, but below 1 Mbps
 
 ```shell
-h1> iperf -s -u -i 1 -p 5002
-h2> iperf -c 10.0.0.1 -p 5002 -u -b 1M -l 1200
+h1# iperf -s -u -i 1 -p 5002
+h2# iperf -c 10.0.0.1 -p 5002 -u -b 1M -l 1200
 ```
 
 9. Commands to check ovs qos and queues
 
+This command in s2 shows the flow rules:
+
+```shell
+s2# ovs-ofctl dump-flows br0
+```
+
 This command in s2 should show two queues are being used:
 
 ```shell
-s2> ovs-ofctl -O OpenFlow13 queue-stats br0
+s2# ovs-ofctl -O OpenFlow13 queue-stats br0
 ```
 
 This command obtains queue ids:
 
 ```shell
-s2> ovs-vsctl list qos
+s2# ovs-vsctl list qos
 ```
 
 This command shows the configuration of a queue:
 
 ```shell
-s2> ovs-vsctl list queue <queue_id>
+s2# ovs-vsctl list queue <queue_id>
 ```
 
 
