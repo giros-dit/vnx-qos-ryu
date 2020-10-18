@@ -10,7 +10,7 @@ Ubuntu with VNX and Ryu. It can be tested using the following ova:
 
 ## Quick guide 
 
-1. (Optional, the modified qos_simple_switch_13.py is already included) To work with the Qos module, modify simple_switch_13.py to register flow entries into table id:1, as follows:
+1. To work with the Qos module, modify simple_switch_13.py to register flow entries into table id:1, as follows:
 
 ```shell
 sed '/OFPFlowMod(/,/)/s/)/, table_id=1)/' /usr/lib/python3/dist-packages/ryu/app/simple_switch_13.py > qos_simple_switch_13.py
