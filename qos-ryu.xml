@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+~~~~~~~~~~~~~~~~~~~~
+VNX Sample scenarios
+~~~~~~~~~~~~~~~~~~~~
+
+Name:        qos-ryu
+Description: As simple tutorial scenario made of 4 LXC Ubuntu virtual machines
+             2 hosts: h1, h2; 
+             2 OpenFlow switches: s1, s2
+             Ryu controller needs to run in localhost
+
+This file is part of the Virtual Networks over LinuX (VNX) Project distribution. 
+(www: http://www.dit.upm.es/vnx - e-mail: vnx@dit.upm.es) 
+
+Departamento de Ingenieria de Sistemas Telematicos (DIT)
+Universidad Politecnica de Madrid
+SPAIN
+
+-->
+
+<vnx xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="/usr/share/xml/vnx/vnx-2.00.xsd">
+  <global>
+    <version>2.0</version>
+    <scenario_name>qos_ryu</scenario_name>
+    <automac/>
+    <vm_mgmt type="none" />
+    <!--vm_mgmt type="private" network="10.250.0.0" mask="24" offset="200">
+       <host_mapping />
+    </vm_mgmt-->
+    <vm_defaults>
+        <console id="0" display="no"/>
+        <console id="1" display="yes"/>
+    </vm_defaults>
+
+    <vnx_cfg>qos-ryu.cvnx</vnx_cfg>
+
+  </global>
+
+  <net name="Net0" mode="virtual_bridge" />
+  <net name="Net1" mode="virtual_bridge" />
+  <net name="Net2" mode="virtual_bridge" />
+  <net name="Net3" mode="virtual_bridge" />
+
+  <vm name="h1" type="lxc" arch="x86_64">
+    <console id="0" display="yes"/>
+    <filesystem type="cow">/usr/share/vnx/filesystems/rootfs_lxc_ubuntu64</filesystem>
+    <if id="1" net="Net1">
+      <ipv4>10.0.0.1/24</ipv4>
+    </if>
+  </vm>
+
+  <vm name="h2" type="lxc" arch="x86_64">
+    <console id="0" display="yes"/>
+    <filesystem type="cow">/usr/share/vnx/filesystems/rootfs_lxc_ubuntu64</filesystem>
+    <if id="1" net="Net2">
+      <ipv4>10.0.0.2/24</ipv4>
+    </if>
+  </vm>
+
+  <vm name="s1" type="lxc" arch="x86_64">
+    <filesystem type="cow">/usr/share/vnx/filesystems/rootfs_lxc_ubuntu64</filesystem>
+    <if id="1" net="Net1">
+    </if>
+    <if id="2" net="Net3">
+    </if>
+    <if id="3" net="Net0">
+      <ipv4>172.17.2.1/24</ipv4>
+    </if>
+    <exec seq="on_boot" type="verbatim">
+        service openvswitch-switch start
+        sleep 5
+        ovs-vsctl del-br br0
+        ovs-vsctl add-br br0
+        ovs-vsctl set bridge br0 protocols=OpenFlow10,OpenFlow12,OpenFlow13
+        ovs-vsctl set-fail-mode br0 secure
+        ovs-vsctl set bridge br0 other-config:datapath-id=0000000000000001
+        ovs-vsctl add-port br0 eth1
+        ovs-vsctl add-port br0 eth2
+        ovs-vsctl set-controller br0 tcp:172.17.2.100:6633
+        ovs-vsctl set-manager ptcp:6632
+    </exec>
+  </vm>
+
+  <vm name="s2" type="lxc" arch="x86_64">
+    <filesystem type="cow">/usr/share/vnx/filesystems/rootfs_lxc_ubuntu64</filesystem>
+    <if id="1" net="Net2">
+    </if>
+    <if id="2" net="Net3">
+    </if>
+    <if id="3" net="Net0">
+      <ipv4>172.17.2.2/24</ipv4>
+    </if>
+    <exec seq="on_boot" type="verbatim">
+        service openvswitch-switch start
+        sleep 5
+        ovs-vsctl del-br br0
+        ovs-vsctl add-br br0
+        ovs-vsctl set bridge br0 protocols=OpenFlow10,OpenFlow12,OpenFlow13
+        ovs-vsctl set-fail-mode br0 secure
+        ovs-vsctl set bridge br0 other-config:datapath-id=0000000000000002
+        ovs-vsctl add-port br0 eth1
+        ovs-vsctl add-port br0 eth2
+        ovs-vsctl set-controller br0 tcp:172.17.2.100:6633
+        ovs-vsctl set-manager ptcp:6632
+    </exec>
+  </vm>
+  <host>
+    <hostif net="Net0">
+      <ipv4>172.17.2.100/24</ipv4>
+      <!--
+        # to create a ryu simple_switch module to work with the Qos module, execute this: 
+        sed '/OFPFlowMod(/,/)/s/)/, table_id=1)/' /usr/lib/python3/dist-packages/ryu/app/simple_switch_13.py > qos_simple_switch_13.py
+      --> 
+    </hostif>
+  </host>
+</vnx>
