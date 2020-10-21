@@ -28,7 +28,7 @@ ryu-manager ryu.app.rest_qos ryu.app.rest_conf_switch ./qos_simple_switch_13.py
 sudo vnx -f qos-ryu.xml -v -t
 ```
 
-(You can use option -P once you are finised to stop the scenario):
+(You can use option -P once you are finished to stop the scenario):
 
 ```shell
 sudo vnx -f qos-ryu.xml -v -P
