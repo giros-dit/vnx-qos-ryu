@@ -6,7 +6,7 @@ Simple VNX scenario using the Ryu controller to test QoS funcions that can be se
 
 ## Requirements
 Ubuntu with VNX and Ryu. It can be tested using the following ova:
-- [VNXSDNLAB2020-v2.ova](https://idefix.dit.upm.es/download/vnx/vnx-vm/VNXSDNLAB2020-v2.ova)
+- [VNXLAB2021-v2.ova](https://idefix.dit.upm.es/download/vnx/vnx-vm/VNXLAB2021-v2.ova)
 
 ## Quick guide 
 
@@ -108,7 +108,7 @@ s2# ovs-vsctl list qos
 This command shows the configuration of a queue:
 
 ```shell
-s2# ovs-vsctl list queue <queue_id>
+s2# ovs-vsctl list queue <queue_id>	
 ```
 
 
