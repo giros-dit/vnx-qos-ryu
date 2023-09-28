@@ -74,15 +74,25 @@ curl -X GET http://172.17.2.100:8080/qos/rules/0000000000000002
 The following test should result in bandwidth under 500 Kbps
 
 ```shell
-h1# iperf -s -u -i 1 -p 5001
-h2# iperf -c 10.0.0.1 -p 5001 -u -b 1M -l 1200 
+# h1
+iperf -s -u -i 1 -p 5001
+```
+
+```shell
+# h2
+iperf -c 10.0.0.1 -p 5001 -u -b 1M -l 1200 
 ```
 
 The following test should result in bandwidth over 800 Kbps, but below 1 Mbps
 
 ```shell
-h1# iperf -s -u -i 1 -p 5002
-h2# iperf -c 10.0.0.1 -p 5002 -u -b 1M -l 1200
+# h1
+iperf -s -u -i 1 -p 5002
+```
+
+```shell
+# h2
+iperf -c 10.0.0.1 -p 5002 -u -b 1M -l 1200
 ```
 
 9. Commands to check ovs qos and queues
@@ -90,25 +100,29 @@ h2# iperf -c 10.0.0.1 -p 5002 -u -b 1M -l 1200
 This command in s2 shows the flow rules:
 
 ```shell
-s2# ovs-ofctl dump-flows br0
+# s2
+ovs-ofctl dump-flows br0
 ```
 
 This command in s2 should show two queues are being used:
 
 ```shell
-s2# ovs-ofctl -O OpenFlow13 queue-stats br0
+# s2
+ovs-ofctl -O OpenFlow13 queue-stats br0
 ```
 
 This command obtains queue ids:
 
 ```shell
-s2# ovs-vsctl list qos
+# s2
+ovs-vsctl list qos
 ```
 
 This command shows the configuration of a queue:
 
 ```shell
-s2# ovs-vsctl list queue <queue_id>	
+# s2
+ovs-vsctl list queue <queue_id>	
 ```
 
 
